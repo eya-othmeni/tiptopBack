@@ -25,21 +25,17 @@ pipeline {
             }
         }
 
-        stage("SonarQube Analysis") {
-
-           steps {
-            withSonarQubeEnv('SonarQube')
-            {
-                  sh '''
-                        mvn clean verify sonar:sonar \
-                        -Dsonar.projectKey=tiptopBack
-
-
-                        '''
-                  echo 'sonar static analysis done'
-           }
-           }
-         }
+       stage("SonarQube Analysis") {
+    steps {
+        withSonarQubeEnv('SonarQube') {
+            sh '''
+                mvn clean verify sonar:sonar \
+                -Dsonar.projectKey=tiptopBack
+            '''
+            echo 'sonar static analysis done'
+        }
+    }
+}
 
           stage("maven package") {
             steps {
@@ -79,20 +75,21 @@ pipeline {
             }
         }
 
-        stage("deploy image"){
+       stage("deploy image"){
             steps {
-                sh '''
-                ssh root@15.237.223.123
+                 script{
 
-                docker compose -f  /root/docker-compose.yml down
-                docker compose -f  /root/docker-compose.yml up -d
+               sh '''
+               ssh root@15.237.223.123 '
+               docker compose  down;
+               docker compose up -d '
                 '''
 
 
             }
             }
         }
-        
+        }
         
 
 

@@ -1,5 +1,7 @@
 package com.tiptop.users;
 
+import com.tiptop.users.entities.ROLES;
+import com.tiptop.users.entities.User;
 import com.tiptop.users.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -22,8 +24,33 @@ public class UsersMicoserviceApplication {
 	}
 	@PostConstruct
 	void init_users() {
+		//admin
+		User admin = new User();
+		admin.setRole(ROLES.USER);
+		admin.setUsername("admin");
+		admin.setPassword("admin");
+		admin.setEmail("admin@gmail.com");
+		admin.setEnabled(true);
+		userService.saveUser(admin);
 
-	//userService.addRoleToUser("admin", "ADMIN");
+
+		//utilisateur
+		User utilisateur = new User();
+		utilisateur.setRole(ROLES.USER);
+		utilisateur.setUsername("utilisateur");
+		utilisateur.setPassword("12345");
+		utilisateur.setEmail("utilisateur@gmail.com");
+		utilisateur.setEnabled(true);
+		userService.saveUser(utilisateur);
+
+		//daniel
+		User daniel = new User();
+		daniel.setRole(ROLES.USER);
+		daniel.setUsername("daniel");
+		daniel.setPassword("12345");
+		daniel.setEmail("daniel@gmail.com");
+		daniel.setEnabled(true);
+		userService.saveUser(daniel);
 		}
 	@Bean
 	BCryptPasswordEncoder getBCE() {

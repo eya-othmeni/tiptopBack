@@ -11,6 +11,7 @@ public class Ticket {
 	private Long ticketId;
 	private Long ticketNumber;
 
+	private boolean used;
 	public User getUser() {
 		return user;
 	}
@@ -28,6 +29,9 @@ public class Ticket {
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	public Ticket() {
+		this.ticketNumber = generateTicketNumber();
+	}
 
 	public String getStatus() {
 		return status;
@@ -65,5 +69,18 @@ public class Ticket {
 	public String toString() {
 		return "ticket [TicketId=" + ticketId + ", TicketNumber=" + ticketNumber
 				+ "]";
+	}
+
+	public boolean isUsed() {
+		return used;
+	}
+
+	public void setUsed(boolean used) {
+		this.used = used;
+	}
+
+	private Long generateTicketNumber(){
+		long number = (long) Math.floor(Math.random() * 9_000_000_000L) + 1_000_000_000L;
+		return number;
 	}
 }

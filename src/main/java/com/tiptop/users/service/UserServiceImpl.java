@@ -1,8 +1,11 @@
 package com.tiptop.users.service;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import com.tiptop.users.dto.UserDTO;
 import com.tiptop.users.entities.ROLES;
 import com.tiptop.users.repos.ITicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +14,9 @@ import com.tiptop.users.entities.Role;
 import com.tiptop.users.entities.User;
 import com.tiptop.users.repos.UserRepository;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -66,6 +71,24 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
+	public List<UserDTO> getAllUsers() {
+		return userRepository.findAll().stream().map(user -> new UserDTO(user)).collect(Collectors.toList());
+	}
+
+	public Boolean deleteUser(Long userId){
+		User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("user with ID : " + userId + " cannot be found"));
+		userRepository.delete(user);
+		return true;
+	}
 
 
+	public User findUserById(Long userId) {
+		return userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("user with ID : " + userId + " cannot be found"));
+	}
+
+	@Override
+	public Collection<UserDTO> findSimpleUsers(ROLES roles) {
+		return userRepository.findByRole(ROLES.USER).stream().map(user -> new UserDTO(user)).collect(Collectors.toList());
+	}
 }

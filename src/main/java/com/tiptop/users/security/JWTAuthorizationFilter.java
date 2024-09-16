@@ -3,11 +3,17 @@ package com.tiptop.users.security;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.impl.DefaultHeader;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -38,23 +44,26 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String jwt = request.getHeader("Authorization");
+        String token = request.getHeader("Authorization");
 
-        if (jwt==null ||!jwt.startsWith(SecParams.PREFIX))
+        if (token==null ||!token.startsWith(SecParams.PREFIX))
         {
             filterChain.doFilter(request, response);
             return;
         }
+        token = token.substring(SecParams.PREFIX.length());
 
-        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SecParams.SECRET)).build();
+        Jwt<DefaultHeader,Claims> jwt=  Jwts.parser().setSigningKey(SecParams.SECRET).parse(token);
+        Claims claims = jwt.getBody();
 
-        jwt = jwt.substring(SecParams.PREFIX.length());
 
-        DecodedJWT decodedJWT = verifier.verify(jwt);
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC512(SecParams.SECRET)).build();
 
-        String username = decodedJWT.getSubject();
 
-        List<String> roles = decodedJWT.getClaims().get("roles").asList(String.class);
+        String username = (String) claims.get("username");
+        String role = (String) claims.get("role");
+
+        List<String> roles = Collections.singletonList(role);
 
         Collection <GrantedAuthority> authorities = new ArrayList<>();
 

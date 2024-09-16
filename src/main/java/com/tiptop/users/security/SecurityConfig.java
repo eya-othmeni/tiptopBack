@@ -1,6 +1,8 @@
 package com.tiptop.users.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,21 +30,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 	}
 
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
 
-		http.authorizeRequests().antMatchers("/**").permitAll();
-		http.authorizeRequests().antMatchers("/**").hasIpAddress( "15.237.223.123" );
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.authorizeRequests().antMatchers("/users/login").permitAll();
+		http.authorizeRequests().antMatchers("/login1").permitAll();
 		http.authorizeRequests().antMatchers("/add").permitAll();
-		http.authorizeRequests().antMatchers("/login").permitAll();
 		http.authorizeRequests().antMatchers("/all").permitAll();
+		http.authorizeRequests().antMatchers("/tickets").permitAll();
+		http.authorizeRequests().antMatchers("/tickets/me").permitAll();
 		http.authorizeRequests().antMatchers("/users/{username}").permitAll();
 		http.authorizeRequests().antMatchers("/getTicketByUserId/{userId}").permitAll();
 		http.authorizeRequests().antMatchers("/jeux-concours").permitAll();
 		http.authorizeRequests().antMatchers("/tickets").permitAll();
 		http.authorizeRequests().antMatchers("/addTicket").permitAll();
-		http.authorizeRequests().antMatchers("/getTickets").permitAll();
+		http.authorizeRequests().antMatchers("/tickets/getAllTickets").authenticated();
 		http.authorizeRequests().antMatchers("/getYearWinner").permitAll();
 		http.authorizeRequests().antMatchers("/asignTicket/{userId}").permitAll();
 		http.authorizeRequests().antMatchers("/updateTicket/{ticketNumber}").permitAll();

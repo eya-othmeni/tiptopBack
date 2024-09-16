@@ -11,7 +11,7 @@ services:
   backend-server:
     image: thetiptop2023667/tiptopback:latest
     ports:
-      - "8080:8080"
+      - "8081:8081"
     environment:
       - spring.datasource.username=root
       - spring.datasource.password=HelloWorld123**
